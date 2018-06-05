@@ -31,10 +31,45 @@ function mkNick {
 	printf "gameoftukplayer%04d" $((RANDOM%9999))
 }
 
+function adbCmd {
+	if [ "$TESTRUN" == "true" ]; then
+		echo "adb $@"
+	else
+		adb "$@"
+		sleep 1
+	fi
+}
+
 
 #######################################################################################################################
 # The actual script
 #######################################################################################################################
 
-echo "Hallo, Welt."
+# go home
+adbCmd shell input keyevent KEYCODE_HOME
+# clear app data
+adbCmd shell pm clear com.tuk.unisport.gameoftuk.gameoftuk
+# start app
+adbCmd shell monkey -p com.tuk.unisport.gameoftuk.gameoftuk -c android.intent.category.LAUNCHER 1
+sleep 5
+# allow camera access
+adbCmd shell input tap 804 1104
+# manually enter id
+adbCmd shell input tap 538 1600
+adbCmd shell input text $(mkId)
+adbCmd shell input tap 873 1160
+# select fb
+adbCmd shell input tap 545 1205
+adbCmd shell input tap 478 1370
+adbCmd shell input tap 545 1486
+# untick newsletter
+adbCmd shell input tap 217 1106
+# input nick name
+adbCmd shell input tap 521 1126
+adbCmd shell input text $(mkNick)
+adbCmd shell input keyevent 111
+adbCmd shell input tap 545 1577
+# let the games begin
+adbCmd shell input tap 545 1427
+
 
